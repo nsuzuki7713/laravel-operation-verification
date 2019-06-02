@@ -15,12 +15,15 @@ class LoginAction extends Controller
      */
     public function __invoke(Request $request): JsonResponse
     {
+        // firebaseインスタンスを注入
+        $firebase = app('firebase');
+
         $idTokenString = $request->input('idToken');
 
-        $firebase = app('firebase');
-        logger(print_r($idTokenString,true));
         try {
+            // Tokenの認証
             $verifiedIdToken = $firebase->getAuth()->verifyIdToken($idTokenString);
+            // logger(print_r($verifiedIdToken,true));
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'error!!',
@@ -29,10 +32,11 @@ class LoginAction extends Controller
         }
 
         $uid = $verifiedIdToken->getClaim('sub');
-        $firebase_user = $firebase->getAuth()->getUser($uid);
+        $name = $verifiedIdToken->getClaim('name');
+
         return response()->json([
             'uid' => $uid,
-            'name' => $firebase_user->displayName,
+            'name' => $name
         ]);
     }
 }
