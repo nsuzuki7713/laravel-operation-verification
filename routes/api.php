@@ -25,3 +25,5 @@ Route::middleware(['cors'])->group(function () {
 
     Route::post('/auth', 'LoginAction');
 });
+
+Route::get('/debug', 'DebugTest');
